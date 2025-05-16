@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: ecom-backend-deployment
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: ecom-backend
@@ -17,14 +17,11 @@ spec:
         image: 100xdevs/todo-app-test:1
         ports:
         - containerPort: 3000
-        env:
-        - name: PORT
-          valueFrom:
-            configMapKeyRef:
-              name: ecom-backend-config
-              key: port
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: ecom-backend-secret
-              key: db_url
+        volumeMounts:
+        - name: env-file
+          readOnly: true
+          mountPath: "/app/secret"
+      volumes:
+      - name: env-file
+        secret:
+          secretName: ecom-backend-secret
